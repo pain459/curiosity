@@ -1,7 +1,4 @@
-# MediaWiki with MySQL
-# Access via "http://localhost:8080"
-#   (or "http://$(docker-machine ip):8080" if using docker-machine)
-version: '3'
+version: '3.8'
 services:
   mediawiki:
     image: mediawiki
@@ -11,11 +8,15 @@ services:
     ports:
       - 8080:80
     volumes:
-      - /var/www/html/
-# After initial setup, download LocalSettings.php to the same directory as
-# this yaml and uncomment the following line and use compose to restart
-# the mediawiki service
-# - ./LocalSettings.php:/var/www/html/LocalSettings.php
+      - ./mediawiki:/var/www/html
+    depends_on:
+      - database
+    environment:
+      - MEDIAWIKI_DB_HOST=database
+      - MEDIAWIKI_DB_NAME=wiki_db
+      - MEDIAWIKI_DB_USER=wikimedia
+      - MEDIAWIKI_DB_PASSWORD=wikimedia
+
   database:
     image: mysql:5.7
     restart: always
@@ -27,7 +28,11 @@ services:
       MYSQL_USER: wikimedia
       MYSQL_PASSWORD: wikimedia
     volumes:
-      - /var/lib/mysql
+      - ./mediawiki:/var/lib/mysql
+
 networks:
   docker_network:
     driver: bridge
+
+volumes:
+  db_data:
