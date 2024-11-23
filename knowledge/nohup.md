@@ -17,3 +17,17 @@ nohup stands for **no hang up**. It is a Linux command used to run processes in 
 nohup <command> [arguments] &
 ```
 
+#### Examples:
+1. Running a command in the background
+```bash
+nohup python3 long_script.py &
+```
+  - runs the script `long_script.py` in the background.
+  - Output is redirected to a file named `nohup.out`
+
+2. Specifying output file
+```bash
+nohup python3 long_script.py > output.log 2>&1 &
+```
+  - Redirects both standard output `(stdout)` and standard error `(stderr)` to `output.log`
+
