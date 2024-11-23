@@ -46,3 +46,15 @@ nohup ./my_script.sh &
     ps -p 12345
     ```
 
+5. Killing the process started by nohup:
+  - To stop the process
+    ```bash
+    kill -9 12345
+    ```
+
+6. Using `nohup` with `disown`
+```bash
+nohup command & disown
+```
+- Ensures the process is fully detatched from the terminal session 
+
