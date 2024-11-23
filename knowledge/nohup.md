@@ -58,3 +58,10 @@ nohup command & disown
 ```
 - Ensures the process is fully detatched from the terminal session 
 
+
+### Important Notes:
+
+  - By default, `nohup` writes output to `nohup.out` in the current directory or `$HOME/nohup.out` if the current directory is not writable.
+  - Combine `nohup` with & to run processes in the background. Without `&`, the terminal will still wait for the process to finish.
+  - `nohup` is often used with job control tools like `screen` or `tmux` for more flexibility in managing detached processes.
+
