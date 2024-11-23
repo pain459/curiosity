@@ -31,3 +31,18 @@ nohup python3 long_script.py > output.log 2>&1 &
 ```
   - Redirects both standard output `(stdout)` and standard error `(stderr)` to `output.log`
 
+3. Running a shell script
+```bash
+nohup ./my_script.sh &
+```
+
+4. Checking the Process ID (PID):
+  - When the command is run with nohup, it prints the PID of the process.
+    ```bash
+    [1] 12345
+    ``` 
+  - Use the `ps` or `top` command to monitor or manage the process
+    ```bash
+    ps -p 12345
+    ```
+
