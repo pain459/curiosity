@@ -1,0 +1,15 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+exporters:
+  signoz:
+    endpoint: "http://signoz:3301"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [signoz]
