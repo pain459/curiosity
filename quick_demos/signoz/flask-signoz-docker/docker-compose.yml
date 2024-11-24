@@ -30,11 +30,6 @@ services:
       - "2181:2181"
     volumes:
       - zookeeper_data:/bitnami
-    healthcheck:
-      test: ["CMD", "/opt/bitnami/zookeeper/bin/zkServer.sh", "status"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # Kafka Message Broker
   kafka:
@@ -43,91 +38,55 @@ services:
     environment:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,PLAINTEXT_HOST://:29092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-    ports:
-      - "9092:9092"
-      - "29092:29092"
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
     depends_on:
       - zookeeper
-    volumes:
-      - kafka_data:/bitnami
-    healthcheck:
-      test: ["CMD", "curl", "-sS", "http://localhost:9092"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # OpenTelemetry Collector
   otel-collector:
     image: signoz/signoz-otel-collector:0.88.11
     container_name: signoz-otel-collector
     ports:
-      - "4317:4317"  # OTLP gRPC
-      - "4318:4318"  # OTLP HTTP
+      - "4317:4317"
+      - "4318:4318"
     depends_on:
       - kafka
+      - clickhouse
     environment:
       - LOG_LEVEL=DEBUG
       - SPAN_STORAGE_TYPE=clickhouse
       - CLICKHOUSE_DATABASE=signoz_traces
-      - CLICKHOUSE_CONNECTION=clickhouse:8123
+      - CLICKHOUSE_CONNECTION=http://clickhouse:8123
     healthcheck:
       test: ["CMD", "curl", "-sS", "http://localhost:13133"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # SigNoz Query Service
+  # Query Service
   query-service:
     image: signoz/query-service:0.38.2
     container_name: signoz-query-service
     ports:
-      - "8080:8080"  # Query service
+      - "8080:8080"
     environment:
       - CLICKHOUSE_HOST=clickhouse
-      - QUERY_SERVICE_PORT=8080
+      - CLICKHOUSE_PORT=8123
+      - JWT_SECRET=signoz_secret_key
     depends_on:
       - clickhouse
-    healthcheck:
-      test: ["CMD", "curl", "-sS", "http://localhost:8080/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # SigNoz Frontend
   frontend:
     image: signoz/frontend:0.38.2
     container_name: signoz-frontend
     ports:
-      - "3301:3301"  # SigNoz Web UI
+      - "3301:3301"
     environment:
       - QUERY_SERVICE_URL=http://query-service:8080
     depends_on:
       - query-service
-    healthcheck:
-      test: ["CMD", "curl", "-sS", "http://localhost:3301"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Flask Application
-  flask-app:
-    build:
-      context: ./flask_app
-    ports:
-      - "5000:5000"  # Flask app
-    environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-    depends_on:
-      - otel-collector
-    healthcheck:
-      test: ["CMD", "curl", "-sS", "http://localhost:5000"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 volumes:
   clickhouse_data:
