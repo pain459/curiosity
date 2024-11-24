@@ -51,8 +51,8 @@ services:
       - "4317:4317"
       - "4318:4318"
     depends_on:
-      - kafka
-      - clickhouse
+      clickhouse:
+        condition: service_healthy  # Wait for ClickHouse to be healthy
     environment:
       - LOG_LEVEL=DEBUG
       - SPAN_STORAGE_TYPE=clickhouse
@@ -75,7 +75,8 @@ services:
       - CLICKHOUSE_PORT=8123
       - JWT_SECRET=signoz_secret_key
     depends_on:
-      - clickhouse
+      clickhouse:
+        condition: service_healthy  # Wait for ClickHouse to be healthy
 
   # SigNoz Frontend
   frontend:
