@@ -1,0 +1,7 @@
+flask-signoz-docker/
+├── docker-compose.yml                # Orchestrates all the services
+├── otel-collector-config.yml         # Configuration file for OpenTelemetry Collector
+├── flask_app/                        # Directory for the Flask application
+│   ├── Dockerfile                    # Dockerfile for building the Flask app image
+│   ├── requirements.txt              # Dependencies for the Flask app
+│   ├── app.py                        # The Flask application with OpenTelemetry instrumentation
