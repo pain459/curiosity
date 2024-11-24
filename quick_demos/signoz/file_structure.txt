@@ -1,7 +1,11 @@
 flask-signoz-docker/
-├── docker-compose.yml                # Orchestrates all the services
-├── otel-collector-config.yml         # Configuration file for OpenTelemetry Collector
-├── flask_app/                        # Directory for the Flask application
+├── docker-compose.yaml               # Orchestrates all services, including SigNoz, ClickHouse, Kafka, and Flask app
+├── otel-collector-config.yml         # Configuration for OpenTelemetry Collector (optional, if further customization is required)
+├── flask_app/                        # Flask application directory
 │   ├── Dockerfile                    # Dockerfile for building the Flask app image
 │   ├── requirements.txt              # Dependencies for the Flask app
 │   ├── app.py                        # The Flask application with OpenTelemetry instrumentation
+├── volumes/                          # Directory to mount persistent volumes for SigNoz components (optional, created dynamically by Docker Compose)
+│   ├── clickhouse_data/              # Stores data for ClickHouse
+│   ├── kafka_data/                   # Stores data for Kafka
+│   ├── zookeeper_data/               # Stores data for Zookeeper
