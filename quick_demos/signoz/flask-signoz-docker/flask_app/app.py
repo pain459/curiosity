@@ -7,9 +7,9 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 
 app = Flask(__name__)
 
-# Set up tracing
+# Set up OpenTelemetry tracing
 provider = TracerProvider()
-processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="http://otel-collector:4317"))
+processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="http://localhost:4317"))
 provider.add_span_processor(processor)
 
 # Instrument the Flask app
