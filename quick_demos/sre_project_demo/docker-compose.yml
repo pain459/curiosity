@@ -75,7 +75,7 @@ services:
       - sre_network
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.10.0
+    image: docker.elastic.co/kibana/kibana:8.10.0-1
     container_name: kibana
     ports:
       - "5601:5601"
