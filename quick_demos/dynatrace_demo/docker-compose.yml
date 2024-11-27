@@ -1,0 +1,49 @@
+version: '3.7'
+services:
+  frontend:
+    image: nginx:latest
+    container_name: frontend
+    ports:
+      - "8080:80"
+    networks:
+      - test-net
+
+  backend:
+    image: python:3.9-slim
+    container_name: backend
+    networks:
+      - test-net
+    command: >
+      sh -c "pip install flask && 
+             echo 'from flask import Flask; app = Flask(__name__); 
+             @app.route(\"/\") 
+             def home(): return \"Hello from Backend!\"; 
+             app.run(host=\"0.0.0.0\", port=5000)' > app.py && 
+             python app.py"
+    ports:
+      - "5000:5000"
+
+  database:
+    image: postgres:14
+    container_name: database
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    networks:
+      - test-net
+
+  dynatrace-oneagent:
+    image: dynatrace/oneagent
+    container_name: dynatrace-agent
+    environment:
+      ONEAGENT_INSTALLER_SCRIPT_URL: "https://<your-dynatrace-url>/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=<your-api-token>"
+    networks:
+      - test-net
+    privileged: true # Required for Dynatrace OneAgent
+
+networks:
+  test-net:
+    driver: bridge
