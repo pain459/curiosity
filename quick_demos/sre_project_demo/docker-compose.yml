@@ -10,6 +10,8 @@ services:
       - ./db:/db
     depends_on:
       - db
+    networks:
+      - app_network
     deploy:
       resources:
         limits:
@@ -24,6 +26,8 @@ services:
       - ./db:/db
     working_dir: /db
     entrypoint: tail -f /dev/null
+    networks:
+      - app_network
     deploy:
       resources:
         limits:
@@ -32,3 +36,24 @@ services:
         reservations:
           cpus: "0.1"         # Reserve 10% of a single CPU core
           memory: "64M"       # Reserve 64 MB of memory
+  load-testing:
+    build:
+      context: ./load_testing
+    ports:
+      - "8089:8089"  # Expose Locust Web UI
+    networks:
+      - app_network
+    depends_on:
+      - flask-app
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"         # Limit to 1 full CPU core
+          memory: "512M"      # Limit memory to 512 MB
+        reservations:
+          cpus: "0.5"         # Reserve 50% of a single CPU core
+          memory: "256M"      # Reserve 256 MB of memory
+
+networks:
+  app_network:
+    driver: bridge
