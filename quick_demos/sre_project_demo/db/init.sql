@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS analytics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    api_call TEXT NOT NULL,
+    status_code INTEGER NOT NULL
+);
