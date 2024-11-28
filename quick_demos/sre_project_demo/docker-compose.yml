@@ -10,9 +10,25 @@ services:
       - ./db:/db
     depends_on:
       - db
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"         # Limit to 50% of a single CPU core
+          memory: "256M"      # Limit memory to 256 MB
+        reservations:
+          cpus: "0.25"        # Reserve 25% of a single CPU core
+          memory: "128M"      # Reserve 128 MB of memory
   db:
     image: keinos/sqlite3:latest
     volumes:
       - ./db:/db
     working_dir: /db
     entrypoint: tail -f /dev/null
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"         # Limit to 30% of a single CPU core
+          memory: "128M"      # Limit memory to 128 MB
+        reservations:
+          cpus: "0.1"         # Reserve 10% of a single CPU core
+          memory: "64M"       # Reserve 64 MB of memory
