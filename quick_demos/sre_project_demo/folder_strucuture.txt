@@ -1,0 +1,21 @@
+project/
+│
+├── app_db_layer/          # Application + Database Layer
+│   ├── app/
+│   │   ├── app.py
+│   │   ├── requirements.txt
+│   ├── db/
+│   │   ├── init.sql
+│   ├── docker-compose.yml  # Compose file for application and database
+│
+├── logging/               # Logging Infrastructure
+│   ├── fluentd/
+│   │   ├── Dockerfile
+│   │   ├── fluent.conf
+│   ├── docker-compose.yml  # Compose file for logging services
+│
+├── load_testing/          # Load Testing Layer
+│   ├── locustfile.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── docker-compose.yml  # Compose file for load testing
