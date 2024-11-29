@@ -1,59 +1,77 @@
-version: '3.8'
+version: '3.8'  # Define the Docker Compose file format version
+
 services:
   flask-app:
     build:
-      context: .
+      context: .  # Path to the directory containing the Dockerfile for the Flask app
     ports:
-      - "5000:5000"
+      - "5000:5000"  # Map container port 5000 to host port 5000
     volumes:
-      - ./app:/app
-      - ./db:/db
+      - ./app:/app  # Mount the app source code directory for live updates
+      - ./db:/db    # Mount the database directory for data persistence
     depends_on:
-      - db
+      - db  # Ensure the database service is started before the Flask app
     networks:
-      - app_network
-    deploy:
+      - app_network  # Connect the service to a custom network
+    logging:  # Configure log rotation for the container
+      driver: "json-file"
+      options:
+        max-size: "5m"  # Limit log size to 5MiB per log file
+        max-file: "3"   # Retain up to 3 rotated log files
+    deploy:  # Set resource limits for the Flask app
       resources:
         limits:
-          cpus: "0.5"         # Limit to 50% of a single CPU core
-          memory: "256M"      # Limit memory to 256 MB
+          cpus: "0.5"         # Max CPU usage: 50% of a single CPU core
+          memory: "256M"      # Max memory usage: 256MB
         reservations:
-          cpus: "0.25"        # Reserve 25% of a single CPU core
-          memory: "128M"      # Reserve 128 MB of memory
+          cpus: "0.25"        # Guaranteed CPU usage: 25% of a single CPU core
+          memory: "128M"      # Guaranteed memory usage: 128MB
+
   db:
-    image: keinos/sqlite3:latest
+    image: keinos/sqlite3:latest  # Use the lightweight SQLite image for the database
     volumes:
-      - ./db:/db
-    working_dir: /db
-    entrypoint: tail -f /dev/null
+      - ./db:/db  # Mount the database directory for data persistence
+    working_dir: /db  # Set the working directory inside the container
+    entrypoint: tail -f /dev/null  # Keep the container running indefinitely
     networks:
-      - app_network
-    deploy:
+      - app_network  # Connect the service to a custom network
+    logging:  # Configure log rotation for the database container
+      driver: "json-file"
+      options:
+        max-size: "5m"  # Limit log size to 5MiB per log file
+        max-file: "3"   # Retain up to 3 rotated log files
+    deploy:  # Set resource limits for the database container
       resources:
         limits:
-          cpus: "0.3"         # Limit to 30% of a single CPU core
-          memory: "128M"      # Limit memory to 128 MB
+          cpus: "0.3"         # Max CPU usage: 30% of a single CPU core
+          memory: "128M"      # Max memory usage: 128MB
         reservations:
-          cpus: "0.1"         # Reserve 10% of a single CPU core
-          memory: "64M"       # Reserve 64 MB of memory
+          cpus: "0.1"         # Guaranteed CPU usage: 10% of a single CPU core
+          memory: "64M"       # Guaranteed memory usage: 64MB
+
   load-testing:
     build:
-      context: ./load_testing
+      context: ./load_testing  # Path to the directory containing the Locust Dockerfile
     ports:
-      - "8089:8089"  # Expose Locust Web UI
+      - "8089:8089"  # Map container port 8089 to host port 8089 for Locust Web UI
     networks:
-      - app_network
+      - app_network  # Connect the service to a custom network
     depends_on:
-      - flask-app
-    deploy:
+      - flask-app  # Ensure the Flask app service is started before Locust
+    logging:  # Configure log rotation for the load-testing container
+      driver: "json-file"
+      options:
+        max-size: "5m"  # Limit log size to 5MiB per log file
+        max-file: "3"   # Retain up to 3 rotated log files
+    deploy:  # Set resource limits for the load-testing container
       resources:
         limits:
-          cpus: "1.0"         # Limit to 1 full CPU core
-          memory: "512M"      # Limit memory to 512 MB
+          cpus: "1.0"         # Max CPU usage: 1 full CPU core
+          memory: "512M"      # Max memory usage: 512MB
         reservations:
-          cpus: "0.5"         # Reserve 50% of a single CPU core
-          memory: "256M"      # Reserve 256 MB of memory
+          cpus: "0.5"         # Guaranteed CPU usage: 50% of a single CPU core
+          memory: "256M"      # Guaranteed memory usage: 256MB
 
 networks:
   app_network:
-    driver: bridge
+    driver: bridge  # Create a custom bridge network for container communication

@@ -1,8 +1,20 @@
+import logging
 from flask import Flask, jsonify, request
 import sqlite3
 from datetime import datetime
 
 app = Flask(__name__)
+
+# Set up logging
+LOG_FILE = "/var/log/app.log"  # Path inside the container
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler()  # For debugging (optional)
+    ]
+)
 
 # Database setup
 DATABASE = "/db/analytics.db"
@@ -20,7 +32,7 @@ def init_db():
         ''')
         conn.commit()
 
-# Initialize the database immediately when the app starts
+# Initialize the database
 init_db()
 
 @app.route('/math/<operation>', methods=['GET'])
@@ -50,6 +62,9 @@ def math_operations(operation):
         except ValueError as e:
             response = {"error": str(e)}
             status_code = 400
+
+    # Log request details
+    logging.info(f"API Call: {operation}, Status Code: {status_code}, Result: {response}")
 
     # Log to database
     with sqlite3.connect(DATABASE) as conn:
