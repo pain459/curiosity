@@ -1,0 +1,1 @@
+D:\SteamLibrary\steamapps\common\ForzaHorizon4\TargetHardwareProfiler.dll renamed to .bak to fix ForzaHorizon4 game launch.
