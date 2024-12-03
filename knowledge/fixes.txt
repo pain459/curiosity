@@ -1,0 +1,2 @@
+D:\SteamLibrary\steamapps\common\ForzaHorizon4\TargetHardwareProfiler.dll renamed to .bak to fix ForzaHorizon4 game launch.
+https://www.reddit.com/r/ForzaHorizon/comments/1666a4l/forza_horizon_4_not_launching_on_windows_11_only/
